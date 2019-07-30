@@ -17,14 +17,12 @@ public class NeuralNetwork {
                 Neuron current = new Neuron(synapses, rand.nextDouble() * 10 - 5);
                 int prevHeight = (i == 0) ? inputs.size() : layerHeight;
 
-
                 for (int prev = 0; prev < prevHeight; ++prev) {
                     Neuron from = (i == 0) ? 
                         new Neuron(inputs.get(prev)) : 
                         hiddenLayers.get(i - 1).get(prev);
                     synapses.add(new Synapse(from, current, rand.nextDouble() * 10 - 5));
                 }
-                current.updateVal();
                 column.add(current);
             }
             hiddenLayers.add(column);
@@ -37,8 +35,22 @@ public class NeuralNetwork {
             for (int prev = 0; prev < hiddenLayers.get(i).size(); ++prev)
                 synapses.add(new Synapse(hiddenLayers.get(i).get(prev), 
                                          current, rand.nextDouble() * 10 - 5));
-            current.updateVal();
             outputs.add(current);
+        }
+    }
+
+    public double cost(ArrayList<Double> desiredOutputs) {
+        double sum = 0;
+        for (int i = 0; i < outputs.size(); ++i) {
+            sum += Math.pow(outputs.get(i).getVal() - desiredOutputs.get(i), 2);
+        }
+        return sum;
+    }
+
+    public void run() {
+        // change this to take inputs
+        for (int j = 0; j < outputs.size(); ++j) {
+            outputs.get(j).updateVal();
         }
     }
 
@@ -54,10 +66,15 @@ public class NeuralNetwork {
             }
             System.out.println();
         }
+        System.out.println("Results...");
+        System.out.println();
+        
         for (int j = 0; j < outputs.size(); ++j) {
-            System.out.printf("%-3.1f ", outputs.get(j).getVal());
+            System.out.printf("|| %-3.1f ||", outputs.get(j).getVal());
         }
     }
+
+    
 
 
 }

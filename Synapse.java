@@ -20,6 +20,7 @@ public class Synapse {
     public void setTo(Neuron instead) { to = instead; }
     
     public double getInput() {
+        from.updateVal();
         return from.getVal() * weight;
     }
 }
