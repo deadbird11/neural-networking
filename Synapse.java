@@ -1,9 +1,14 @@
 public class Synapse {
+    // defines connection between 2 neurons
+    // input neuron
     private Neuron from;
+    // possibly do not need this, deciding after back prop
     private Neuron to;
+    // strength of connection, aka influence in deciding output
     private double weight;
 
     public Synapse() {
+        // maybe delete, doesn't really make sense
         weight = 0;
         from = null;
         to = null;
@@ -20,6 +25,7 @@ public class Synapse {
     public void setTo(Neuron instead) { to = instead; }
     
     public double getInput() {
+        // goes back recursively through network calculating the values
         from.updateVal();
         return from.getVal() * weight;
     }

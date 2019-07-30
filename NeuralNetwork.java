@@ -2,24 +2,29 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class NeuralNetwork {
-    private ArrayList<Double> inputs;
+    // just to keep track of stuff and for display
+    private ArrayList<Double> inputs = new ArrayList<Double>();
     private ArrayList<ArrayList<Neuron>> hiddenLayers;
     private ArrayList<Neuron> outputs;
 
-    public NeuralNetwork(ArrayList<Double> _inputs, int numLayers, int layerHeight, int numOutputs) {
-        inputs = _inputs;
+    public NeuralNetwork(int numInputs, int numLayers, int layerHeight, int numOutputs) {
+        
         hiddenLayers = new ArrayList<ArrayList<Neuron>>();
         Random rand = new Random();
+
         for (int i = 0; i < numLayers; ++i) {
             ArrayList<Neuron> column = new ArrayList<Neuron>();
+
             for (int j = 0; j < layerHeight; ++j) {
                 ArrayList<Synapse> synapses = new ArrayList<Synapse>();
                 Neuron current = new Neuron(synapses, rand.nextDouble() * 10 - 5);
-                int prevHeight = (i == 0) ? inputs.size() : layerHeight;
-
+                // if we are in first layer, we are taking input
+                int prevHeight = (i == 0) ? numInputs : layerHeight;
+                // giving each neuron its parents from previous layer
                 for (int prev = 0; prev < prevHeight; ++prev) {
+                    // haven't taken input, so first layer has null parent neurons
                     Neuron from = (i == 0) ? 
-                        new Neuron(inputs.get(prev)) : 
+                        null : 
                         hiddenLayers.get(i - 1).get(prev);
                     synapses.add(new Synapse(from, current, rand.nextDouble() * 10 - 5));
                 }
@@ -27,6 +32,7 @@ public class NeuralNetwork {
             }
             hiddenLayers.add(column);
         }
+        // creating final output layer
         outputs = new ArrayList<Neuron>();
         for (int j = 0; j < numOutputs; ++j) {
             ArrayList<Synapse> synapses = new ArrayList<Synapse>();
@@ -38,7 +44,7 @@ public class NeuralNetwork {
             outputs.add(current);
         }
     }
-
+    // evaluates performance of network
     public double cost(ArrayList<Double> desiredOutputs) {
         double sum = 0;
         for (int i = 0; i < outputs.size(); ++i) {
@@ -47,13 +53,31 @@ public class NeuralNetwork {
         return sum;
     }
 
-    public void run() {
-        // change this to take inputs
+    public boolean run(ArrayList<Double> _inputs, int desired) {
+        // filling in the input layer
+        // this means filling in parent neurons in every synapse
+        inputs = _inputs;
+        for (int j = 0; j < hiddenLayers.get(0).size(); ++j) {
+            ArrayList<Neuron> parents = new ArrayList<Neuron>();
+            for (int prev = 0; prev < _inputs.size(); ++prev) {
+                parents.add(new Neuron(_inputs.get(prev).doubleValue()));
+            }
+            hiddenLayers.get(0).get(j).setParents(parents);
+        }
+        // going backwards through the network recursively updating nodes
+        // this calculates final value
+        Integer maxIndex = null;
+        double maxVal = 0;
         for (int j = 0; j < outputs.size(); ++j) {
             outputs.get(j).updateVal();
+            if (outputs.get(j).getVal() > maxVal) {
+                maxVal = outputs.get(j).getVal();
+                maxIndex = Integer.valueOf(j);
+            }
         }
+        return (maxIndex == null) ? false : maxIndex + 1 == desired;
     }
-
+    // formatting stuff
     public void display() {
         for (int j = 0; j < hiddenLayers.get(0).size(); ++j) {
             if (j < inputs.size()) {
