@@ -6,9 +6,11 @@ public class NeuralNetwork {
     private ArrayList<Double> inputs = new ArrayList<Double>();
     private ArrayList<ArrayList<Neuron>> hiddenLayers;
     private ArrayList<Neuron> outputs;
+    private int numInputs;
 
-    public NeuralNetwork(int numInputs, int numLayers, int layerHeight, int numOutputs) {
+    public NeuralNetwork(int _numInputs, int numLayers, int layerHeight, int numOutputs) {
         
+        numInputs = _numInputs;
         hiddenLayers = new ArrayList<ArrayList<Neuron>>();
         Random rand = new Random();
 
@@ -97,8 +99,14 @@ public class NeuralNetwork {
             System.out.printf("|| %-3.1f ||", outputs.get(j).getVal());
         }
     }
-
-    
-
-
+    public void backprop() {
+        for ()
+    }
+    public void trainStep(ArrayList<Double> _inputs, /*DELETE THIS*/ int desired) {
+        // TODO: GET DESIRED FROM INPUT
+        String success = (run(_inputs, desired)) ? "Successful" : "Failed";
+        display();
+        System.out.println("------> Success status: " + success);
+        
+    }
 }

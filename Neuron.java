@@ -6,6 +6,9 @@ public class Neuron {
     // sigmoid value
     private Double val;
     private double bias;
+    private double dBias = 0;
+    private Double z = null;
+    boolean backpropped = false;
 
     public Neuron() {
         // makes things easier
@@ -25,8 +28,8 @@ public class Neuron {
         val = null;
     }
     public Neuron(double _val) {
-        // for first layer, no inputs, bias is 0
-        // might delete this, every neuron should have inputs
+        // for first layer, no inputs, no bias
+        bias = 0;
         inputs = null;
         val = Double.valueOf(_val);
     }
@@ -40,12 +43,38 @@ public class Neuron {
     // saves time checking if value has been calculated (not null)
     public void updateVal() {
         if (val == null) {
-            val = bias;
+            z = bias;
             for (int i = 0; i < inputs.size(); ++i) {
-                val += inputs.get(i).getInput();
+                z += inputs.get(i).getInput();
             }
-            val = sigmoid(val);
+            val = sigmoid(z);
         }
+    }
+    public void backprop(double expected) {
+        if (!backpropped) {
+            backpropped = true;
+            double mult = 2 * (val - expected) * dSigmoid(z);
+            dBias += mult;
+            for (int i = 0; i < inputs.size(); ++i) {
+                inputs.get(i).backprop(mult);
+            }
+        }
+    }
+    public void innerBackprop(double mult) {
+        if (inputs == null || backpropped) {
+            return;
+        } else {
+            backpropped = true;
+            dBias += mult * dSigmoid(z);
+            for (int i = 0; i < inputs.size(); ++i) {
+                inputs.get(i).backprop(mult);
+            }
+        }
+    }
+    public void applyChanges() {
+        backpropped = false;
+        bias += dBias;
+        dBias = 0;
     }
     // for changing out the input to the network
     // only the first layer uses this
@@ -57,5 +86,8 @@ public class Neuron {
     // Function: R -> [0, 1]
     private static double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
+    }
+    private static double dSigmoid(double x) {
+        return 1 / (4*Math.pow(Math.cosh(x/2), 2));
     }
 }
