@@ -72,6 +72,7 @@ public class Neuron {
         }
     }
     public void applyChanges() {
+        
         backpropped = false;
         bias += dBias;
         dBias = 0;

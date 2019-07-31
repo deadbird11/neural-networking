@@ -6,11 +6,10 @@ public class NeuralNetwork {
     private ArrayList<Double> inputs = new ArrayList<Double>();
     private ArrayList<ArrayList<Neuron>> hiddenLayers;
     private ArrayList<Neuron> outputs;
-    private int numInputs;
+    private int desired;
 
-    public NeuralNetwork(int _numInputs, int numLayers, int layerHeight, int numOutputs) {
+    public NeuralNetwork(int numInputs, int numLayers, int layerHeight, int numOutputs) {
         
-        numInputs = _numInputs;
         hiddenLayers = new ArrayList<ArrayList<Neuron>>();
         Random rand = new Random();
 
@@ -55,7 +54,7 @@ public class NeuralNetwork {
         return sum;
     }
 
-    public boolean run(ArrayList<Double> _inputs, int desired) {
+    public boolean run(ArrayList<Double> _inputs) {
         // filling in the input layer
         // this means filling in parent neurons in every synapse
         inputs = _inputs;
@@ -100,11 +99,15 @@ public class NeuralNetwork {
         }
     }
     public void backprop() {
-        for ()
+        ArrayList<Neuron> outputLayer = hiddenLayers.get(hiddenLayers.size()-1);
+        for (int i = 0; i < outputLayer.size(); ++i) {
+            outputLayer.get(i).backprop(desired);
+        }
     }
-    public void trainStep(ArrayList<Double> _inputs, /*DELETE THIS*/ int desired) {
+    public void trainStep(ArrayList<Double> _inputs, /*DELETE THIS*/ int _desired) {
         // TODO: GET DESIRED FROM INPUT
-        String success = (run(_inputs, desired)) ? "Successful" : "Failed";
+        desired = _desired;
+        String success = (run(_inputs)) ? "Successful" : "Failed";
         display();
         System.out.println("------> Success status: " + success);
         
