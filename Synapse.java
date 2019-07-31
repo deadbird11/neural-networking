@@ -30,11 +30,11 @@ public class Synapse {
         return from.getVal() * weight;
     }
     public void backprop(double mult) {
-        dWeight += -1 * mult * from.getVal();
+        dWeight += mult * from.getVal();
         from.innerBackprop(weight * mult);
     }
     public void applyChanges() {
-        weight += dWeight;
+        weight -= dWeight;
         dWeight = 0;
     }
 }

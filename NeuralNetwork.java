@@ -51,7 +51,7 @@ public class NeuralNetwork {
         for (int i = 0; i < outputs.size(); ++i) {
             sum += Math.pow(outputs.get(i).getVal() - desiredOutputs.get(i), 2);
         }
-        return sum;
+        return sum / inputs.size();
     }
 
     public boolean run(ArrayList<Double> _inputs) {
@@ -109,12 +109,16 @@ public class NeuralNetwork {
             }
         }
     }
-    public void trainStep(ArrayList<Double> _inputs, /*DELETE THIS*/ int _desired) {
+    public void trainStep(ArrayList<Double> _inputs, /*TODO: DELETE THIS*/ int _desired) {
         // TODO: GET DESIRED FROM INPUT
         desired = _desired;
         String success = (run(_inputs)) ? "Successful" : "Failed";
-        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
         display();
+        System.out.println();
         System.out.println("------> Success status: " + success);
         backprop();
         

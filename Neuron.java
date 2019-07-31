@@ -2,13 +2,14 @@ import java.util.ArrayList;
 
 public class Neuron {
     // synapses connected on left
-    protected ArrayList<Synapse> inputs;
+    private ArrayList<Synapse> inputs;
     // sigmoid value
-    protected Double val;
-    protected double bias;
+    private Double val;
+    private double bias;
     private double dBias = 0;
-    protected Double z = null;
+    private Double z = null;
     private boolean calculated = false;
+    private boolean backpropped = false;
 
     public Neuron() {
         // makes things easier
@@ -51,26 +52,28 @@ public class Neuron {
         }
     }
     public void backprop(double expected) {
+        backpropped = true;
         if (inputs != null) {
-            double mult = 2 * (val - expected) * dSigmoid(z);
-            dBias += -1 * mult;
+            double mult = 2 * (val - expected) * dSigmoid();
+            dBias += mult;
             for (int i = 0; i < inputs.size(); ++i) {
                 inputs.get(i).backprop(mult);
             }
         }
     }
     public void innerBackprop(double mult) {
+        backpropped = true;
         if (inputs != null) {
-            dBias += mult * dSigmoid(z);
+            dBias += mult * dSigmoid();
             for (int i = 0; i < inputs.size(); ++i) {
                 inputs.get(i).backprop(mult);
             }
         }
     }
     public void applyChanges() {
-
+        backpropped = false;
         calculated = false;
-        bias += dBias;
+        bias -= dBias;
         dBias = 0;
         if (inputs != null) {
             for (int i = 0; i < inputs.size(); ++i) {
@@ -86,10 +89,10 @@ public class Neuron {
         }
     }
     // Function: R -> [0, 1]
-    protected static double sigmoid(double x) {
+    private static double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
     }
-    private static double dSigmoid(double x) {
-        return 1 / (4*Math.pow(Math.cosh(x/2), 2));
+    private double dSigmoid() {
+        return val * (1 - val);
     }
 }
