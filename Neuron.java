@@ -2,13 +2,13 @@ import java.util.ArrayList;
 
 public class Neuron {
     // synapses connected on left
-    private ArrayList<Synapse> inputs;
+    protected ArrayList<Synapse> inputs;
     // sigmoid value
-    private Double val;
-    private double bias;
+    protected Double val;
+    protected double bias;
     private double dBias = 0;
-    private Double z = null;
-    boolean backpropped = false;
+    protected Double z = null;
+    private boolean calculated = false;
 
     public Neuron() {
         // makes things easier
@@ -17,7 +17,6 @@ public class Neuron {
         bias = 0;
     }
     public Neuron(ArrayList<Synapse> _inputs, double _val, double _bias) {
-        // might delete this one...val should be input or calculated
         inputs = _inputs;
         val = Double.valueOf(_val);
         bias = _bias;
@@ -40,9 +39,10 @@ public class Neuron {
     public void setVal(double instead) { val = instead; }
 
     // goes back in the network recursively to calculate value
-    // saves time checking if value has been calculated (not null)
-    public void updateVal() {
-        if (val == null) {
+    // saves time checking if value has been calculated
+    public void updateNetwork() {
+        if (inputs != null && !calculated) {
+            calculated = true;
             z = bias;
             for (int i = 0; i < inputs.size(); ++i) {
                 z += inputs.get(i).getInput();
@@ -51,20 +51,16 @@ public class Neuron {
         }
     }
     public void backprop(double expected) {
-        if (!backpropped) {
-            backpropped = true;
+        if (inputs != null) {
             double mult = 2 * (val - expected) * dSigmoid(z);
-            dBias += mult;
+            dBias += -1 * mult;
             for (int i = 0; i < inputs.size(); ++i) {
                 inputs.get(i).backprop(mult);
             }
         }
     }
     public void innerBackprop(double mult) {
-        if (inputs == null || backpropped) {
-            return;
-        } else {
-            backpropped = true;
+        if (inputs != null) {
             dBias += mult * dSigmoid(z);
             for (int i = 0; i < inputs.size(); ++i) {
                 inputs.get(i).backprop(mult);
@@ -72,10 +68,15 @@ public class Neuron {
         }
     }
     public void applyChanges() {
-        
-        backpropped = false;
+
+        calculated = false;
         bias += dBias;
         dBias = 0;
+        if (inputs != null) {
+            for (int i = 0; i < inputs.size(); ++i) {
+                inputs.get(i).applyChanges();
+            }
+        }
     }
     // for changing out the input to the network
     // only the first layer uses this
@@ -85,7 +86,7 @@ public class Neuron {
         }
     }
     // Function: R -> [0, 1]
-    private static double sigmoid(double x) {
+    protected static double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
     }
     private static double dSigmoid(double x) {

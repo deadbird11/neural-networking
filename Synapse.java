@@ -7,7 +7,6 @@ public class Synapse {
     // strength of connection, aka influence in deciding output
     private double weight;
     private double dWeight = 0;
-    boolean backpropped = false;
     public Synapse() {
         // maybe delete, doesn't really make sense
         weight = 0;
@@ -27,18 +26,14 @@ public class Synapse {
     
     public double getInput() {
         // goes back recursively through network calculating the values
-        from.updateVal();
+        from.updateNetwork();
         return from.getVal() * weight;
     }
     public void backprop(double mult) {
-        if (!backpropped) {
-            backpropped = true;
-            dWeight += mult * from.getVal();
-            from.innerBackprop(weight * mult);
-        }
+        dWeight += -1 * mult * from.getVal();
+        from.innerBackprop(weight * mult);
     }
     public void applyChanges() {
-        backpropped = false;
         weight += dWeight;
         dWeight = 0;
     }

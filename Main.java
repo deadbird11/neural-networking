@@ -12,16 +12,7 @@ public class Main {
         }
         outputs.set(0, Double.valueOf(1));
         NeuralNetwork nn = new NeuralNetwork(10, 2, 16, 10);
-        nn.display();
-        System.out.println();
-        System.out.println();
-        System.out.println();        
-        System.out.println("\n\n\n**********************\nRunning...");
-        boolean success = nn.run(inputs, 3);
-        System.out.println("Done!");
-        nn.display();
-        System.out.println();
-        System.out.println(nn.cost(outputs));
-        System.out.println("Success status: " + success);
+        nn.trainStep(inputs, 3);
+        nn.trainStep(inputs, 3);
     }
 }

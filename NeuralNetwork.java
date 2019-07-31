@@ -70,7 +70,7 @@ public class NeuralNetwork {
         Integer maxIndex = null;
         double maxVal = 0;
         for (int j = 0; j < outputs.size(); ++j) {
-            outputs.get(j).updateVal();
+            outputs.get(j).updateNetwork();
             if (outputs.get(j).getVal() > maxVal) {
                 maxVal = outputs.get(j).getVal();
                 maxIndex = Integer.valueOf(j);
@@ -99,17 +99,24 @@ public class NeuralNetwork {
         }
     }
     public void backprop() {
-        ArrayList<Neuron> outputLayer = hiddenLayers.get(hiddenLayers.size()-1);
-        for (int i = 0; i < outputLayer.size(); ++i) {
-            outputLayer.get(i).backprop(desired);
+        for (int i = 0; i < outputs.size(); ++i) {
+            outputs.get(i).backprop((i == desired) ? 1 : 0);
+            outputs.get(i).applyChanges();
+        }
+        for (int i = 0; i < hiddenLayers.size(); ++i) {
+            for (int j = 0; j < hiddenLayers.get(i).size(); ++j) {
+                hiddenLayers.get(i).get(j).applyChanges();
+            }
         }
     }
     public void trainStep(ArrayList<Double> _inputs, /*DELETE THIS*/ int _desired) {
         // TODO: GET DESIRED FROM INPUT
         desired = _desired;
         String success = (run(_inputs)) ? "Successful" : "Failed";
+        
         display();
         System.out.println("------> Success status: " + success);
+        backprop();
         
     }
 }
