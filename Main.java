@@ -12,7 +12,8 @@ public class Main {
         }
         outputs.set(0, Double.valueOf(1));
         NeuralNetwork nn = new NeuralNetwork(10, 2, 16, 10);
-        nn.trainStep(inputs, 3);
-        nn.trainStep(inputs, 3);
+        for (int i = 0; i < 2; ++i) {
+            nn.trainStep(inputs, 0);
+        }
     }
 }

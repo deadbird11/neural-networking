@@ -7,6 +7,9 @@ public class Synapse {
     // strength of connection, aka influence in deciding output
     private double weight;
     private double dWeight = 0;
+    private double backReturn = 0;
+
+
     public Synapse() {
         // maybe delete, doesn't really make sense
         weight = 0;
@@ -17,24 +20,32 @@ public class Synapse {
         from = _from;
         to = _to;
         weight = _weight;
+        from = _from;
+        if (from != null) {
+            from.addOutput(this);
+        }
+            
     }
     public double getWeight() { return weight; }
     public void setWeight(double instead) { weight = instead; }
 
-    public void setFrom(Neuron instead) { from = instead; }
-    public void setTo(Neuron instead) { to = instead; }
+    public void setFrom(Neuron instead) { from = instead; from.addOutput(this); }
+    public void setTo(Neuron instead) { to = instead; to.addInput(this); }
     
-    public double getInput() {
+    public double getOutput() {
         // goes back recursively through network calculating the values
         from.updateNetwork();
         return from.getVal() * weight;
     }
-    public void backprop(double mult) {
-        dWeight += mult * from.getVal();
-        from.innerBackprop(weight * mult);
+    public double backprop() {
+        double nextBackprop = to.backprop();
+        dWeight += nextBackprop * from.getVal();
+        backReturn = weight * nextBackprop;
+        return backReturn;
     }
     public void applyChanges() {
         weight -= dWeight;
         dWeight = 0;
+        to.applyChanges();
     }
 }
