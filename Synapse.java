@@ -33,13 +33,13 @@ public class Synapse {
     public void setTo(Neuron instead) { to = instead; to.addInput(this); }
     
     public double getOutput() {
-        // goes back recursively through network calculating the values
+        // goes back recursively through network calculating the activation
         from.updateNetwork();
-        return from.getVal() * weight;
+        return from.getActivation() * weight;
     }
     public double backprop() {
         double nextBackprop = to.backprop();
-        dWeight += nextBackprop * from.getVal();
+        dWeight = nextBackprop * from.getActivation();
         backReturn = weight * nextBackprop;
         return backReturn;
     }

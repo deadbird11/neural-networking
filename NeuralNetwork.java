@@ -15,7 +15,7 @@ public class NeuralNetwork {
             ArrayList<Neuron> layer = new ArrayList<Neuron>();
             for (int i = 0; i < layerHeight; ++i) {
                 Neuron current = new Neuron();
-                current.setBias(rand.nextDouble()*10 - 5);
+                // current.setBias(rand.nextDouble()*10 - 5);
                 int prevHeight = (j == 0) ? numInputs : layerHeight;
                 for (int prev = 0; prev < prevHeight; ++prev) {
                     Neuron from;
@@ -24,7 +24,7 @@ public class NeuralNetwork {
                     } else {
                         from = hiddenLayers.get(j-1).get(prev);
                     }
-                    current.addInput(new Synapse(from, current, rand.nextDouble() * 10 - 5));
+                    current.addInput(new Synapse(from, current, rand.nextDouble()*3 - 1.5));
                 }
                 layer.add(current);
             }
@@ -33,18 +33,18 @@ public class NeuralNetwork {
         for (int i = 0; i < numOutputs; ++i) {
             ArrayList<Neuron> last = hiddenLayers.get(hiddenLayers.size()-1);
             OutputNeuron current = new OutputNeuron();
-            current.setBias(rand.nextDouble()*10 - 5);
+            // current.setBias(rand.nextDouble()*10 - 5);
             for (int prev = 0; prev < last.size(); ++prev) {
-                current.addInput(new Synapse(last.get(prev), current, rand.nextDouble()*10 - 5));
+                current.addInput(new Synapse(last.get(prev), current, rand.nextDouble()*3 - 1.5));
             }
             outputs.add(current);
         }
     }
-    // evaluates performance of network
+    // eactivationuates performance of network
     public double cost(ArrayList<Double> desiredOutputs) {
         double sum = 0;
         for (int i = 0; i < outputs.size(); ++i) {
-            sum += Math.pow(outputs.get(i).getVal() - desiredOutputs.get(i), 2);
+            sum += Math.pow(outputs.get(i).getActivation() - desiredOutputs.get(i), 2);
         }
         return sum / inputs.size();
     }
@@ -60,20 +60,19 @@ public class NeuralNetwork {
             hiddenLayers.get(0).get(j).setParents(inputs);
         }
         // going backwards through the network recursively updating nodes
-        // this calculates final value
+        // this calculates final activationue
         int maxIndex = 0;
-        double maxVal = 0;
+        double maxactivation = 0;
         for (int j = 0; j < outputs.size(); ++j) {
             outputs.get(j).updateNetwork();
-            if (outputs.get(j).getVal() > maxVal) {
-                maxVal = outputs.get(j).getVal();
+            if (outputs.get(j).getActivation() > maxactivation) {
+                maxactivation = outputs.get(j).getActivation();
                 maxIndex = j;
             }
         }
         System.out.println();
-        System.out.println(maxVal);
+        System.out.println(maxactivation);
         System.out.println(maxIndex);
-
 
         return (maxIndex == -1) ? false : maxIndex == desired;
     }
@@ -81,12 +80,12 @@ public class NeuralNetwork {
     public void display() {
         for (int j = 0; j < hiddenLayers.get(0).size(); ++j) {
             if (j < inputs.size()) {
-                System.out.printf("%-3.1f", inputs.get(j).getVal());
+                System.out.printf("%-3.1f", inputs.get(j).getActivation());
             } else {
                 System.out.print("   ");
             }
             for (int i = 0; i < hiddenLayers.size(); ++i) {
-                System.out.printf(" ----> %-3.1f", hiddenLayers.get(i).get(j).getVal());
+                System.out.printf(" ----> %-3.1f", hiddenLayers.get(i).get(j).getActivation());
             }
             System.out.println();
         }
@@ -98,7 +97,7 @@ public class NeuralNetwork {
         System.out.println("Results...");
         System.out.println();
         for (int j = 0; j < outputs.size(); ++j) {
-            System.out.printf("|| %-3.1f ||", outputs.get(j).getVal());
+            System.out.printf("|| %-3.1f ||", outputs.get(j).getActivation());
         }
     }
     public void backprop() {

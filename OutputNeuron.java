@@ -8,7 +8,7 @@ public class OutputNeuron extends Neuron {
 
     @Override
     public double backprop() {
-        dBias = dSigmoid() * 2 * (val - expected);
+        dBias = dSigmoid() * 2 * (activation - expected);
         return dBias;
     }
 }

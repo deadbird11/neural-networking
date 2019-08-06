@@ -5,7 +5,7 @@ public class Neuron {
     private ArrayList<Synapse> inputs = new ArrayList<Synapse>();
     private ArrayList<Synapse> outputs = new ArrayList<Synapse>();
     // sigmoid value
-    protected double val;
+    protected double activation;
     private double bias;
     protected double dBias = 0;
     private double z = 0;
@@ -15,29 +15,29 @@ public class Neuron {
 
     public Neuron() {
         // makes things easier
-        val = 0;
+        activation= 0;
         bias = 0;
     }
-    public Neuron(ArrayList<Synapse> _inputs, double _val, double _bias) {
+    public Neuron(ArrayList<Synapse> _inputs, double _activation, double _bias) {
         inputs = _inputs;
-        val = Double.valueOf(_val);
+        activation= _activation;
         bias = _bias;
     }
     public Neuron(ArrayList<Synapse> _inputs, double _bias) {
         inputs = _inputs;
         bias = _bias;
-        val = 0;
+        activation= 0;
     }
-    public Neuron(double _val) {
+    public Neuron(double _activation) {
         // for first layer, no inputs, no bias
         bias = 0;
-        val = Double.valueOf(_val);
+        activation= _activation;
     }
     public double getBias() { return bias; }
     public void setBias(double instead) { bias = instead; }
     
-    public double getVal() { return val; }
-    public void setVal(double instead) { val = instead; }
+    public double getActivation() { return activation; }
+    public void setActivation(double instead) { activation = instead; }
 
     // goes back in the network recursively to calculate value
     // saves time checking if value has been calculated
@@ -48,7 +48,7 @@ public class Neuron {
             for (int i = 0; i < inputs.size(); ++i) {
                 z += inputs.get(i).getOutput();
             }
-            val = sigmoid(z);
+            activation= sigmoid(z);
         }
     }
     public void setExpected(double expected) {
@@ -68,7 +68,7 @@ public class Neuron {
                 error += outputs.get(i).backprop();
             }
             error *= dSigmoid();
-            dBias += error;
+            dBias = error;
         }
         return error;
     }
@@ -93,6 +93,6 @@ public class Neuron {
         return 1 / (1 + Math.exp(-x));
     }
     protected double dSigmoid() {
-        return val * (1 - val);
+        return activation * (1 - activation);
     }
 }
